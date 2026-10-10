@@ -256,3 +256,18 @@ html.reduced-motion main section, html.reduced-motion main .grid > * { animation
 /* dark mode (invert trick, images flipped back) */
 html.dark { filter: invert(1) hue-rotate(180deg); background: #fff; }
 html.dark img, html.dark video, html.dark iframe, html.dark .leaflet-container, html.dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg); }
+
+/* tour overlay card entrance (used by DemoTour) */
+@keyframes aaf-panel-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes aaf-item-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.aaf-panel-in { animation: aaf-panel-in 0.3s ease-out both; }
+.aaf-item-in { animation: aaf-item-in 0.3s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .aaf-panel-in, .aaf-item-in { animation: none; }
+}

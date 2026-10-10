@@ -19,6 +19,14 @@ import SiteTools from "./components/SiteTools";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
+// Set NEXT_PUBLIC_SITE_URL in Vercel to the live address (no trailing slash).
+// Link previews need absolute URLs, so this is used for og:url and og:image.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://all-around-forsyth.vercel.app";
+const SITE_TITLE = "All Around Forsyth — Forsyth County, GA Community Directory";
+const SITE_DESCRIPTION =
+  "Parks, civic leaders, public safety, local businesses, events, and history across Forsyth County, Georgia, in one place.";
+const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+
 export default function RootLayout({
   children,
 }: {
@@ -29,12 +37,32 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
-        <title>All Around Forsyth — Forsyth County, GA Community Directory</title>
-        <meta
-          name="description"
-          content="Centralized directory for Parks, Civic Leadership, Public Safety, Businesses, Events, and History across Forsyth County, Georgia."
-        />
+        <title>{SITE_TITLE}</title>
+        <meta name="description" content={SITE_DESCRIPTION} />
+        <link rel="canonical" href={SITE_URL} />
+        <meta name="theme-color" content="#1B3B36" />
         <link rel="icon" href="/images/aaf.png" type="image/png" />
+
+        {/* Open Graph: used by Facebook, LinkedIn, Slack, iMessage, Discord, and most link previews */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="All Around Forsyth" />
+        <meta property="og:title" content={SITE_TITLE} />
+        <meta property="og:description" content={SITE_DESCRIPTION} />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:secure_url" content={OG_IMAGE} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Forsyth County Courthouse in Georgia, with the All Around Forsyth title" />
+        <meta property="og:locale" content="en_US" />
+
+        {/* Twitter / X card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={SITE_TITLE} />
+        <meta name="twitter:description" content={SITE_DESCRIPTION} />
+        <meta name="twitter:image" content={OG_IMAGE} />
+        <meta name="twitter:image:alt" content="Forsyth County Courthouse in Cumming, Georgia" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

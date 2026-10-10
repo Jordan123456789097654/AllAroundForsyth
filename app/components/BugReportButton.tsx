@@ -79,7 +79,7 @@ export default function BugReportButton() {
       <button
         onClick={open}
         aria-label="Report a bug"
-        className="fixed bottom-4 left-4 z-40 flex items-center gap-2 bg-[#1B3B36] hover:bg-[#2A8C82] text-white text-xs font-bold px-4 py-3 rounded-full shadow-lg border border-white/20 transition-all duration-300 hover:-translate-y-1 active:scale-95 min-h-[44px]"
+        className="fixed bottom-4 right-4 z-40 flex items-center gap-2 bg-[#1B3B36] hover:bg-[#2A8C82] text-white text-xs font-bold px-4 py-3 rounded-full shadow-lg border border-white/20 transition-all duration-300 hover:-translate-y-1 active:scale-95 min-h-[44px]"
       >
         <Bug className="w-4 h-4 text-amber-300" aria-hidden="true" />
         <span className="hidden sm:inline">Report a Bug</span>

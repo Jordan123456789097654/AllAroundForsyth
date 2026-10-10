@@ -26,6 +26,8 @@ export interface Panel {
   title: string;
   items: string[];
   note?: string;
+  /** where the card sits; bottom-right keeps clear of the top bar and the page's main content */
+  pos?: "top-right" | "bottom-right";
 }
 
 interface Ctx {
@@ -76,6 +78,18 @@ const visible = (e: HTMLElement) => e.getClientRects().length > 0;
 const qa = (sel: string) =>
   Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((e) => !e.closest("[data-tour-ui]") && visible(e));
 const qs = (sel: string) => qa(sel)[0] ?? null;
+
+// the heading under an insight label on the crowd meter, e.g. "Best Quiet Window"
+const under = (label: string) => {
+  const span = qa("#crowd-meter span").find((e) => (e.textContent || "").includes(label));
+  return span?.parentElement?.querySelector("h4")?.textContent?.trim() || "";
+};
+
+// names of the cards currently on screen (cards are the .group blocks that hold an h3)
+const cardNames = () =>
+  qa("main .group h3")
+    .map((e) => (e.textContent || "").trim())
+    .filter(Boolean);
 
 function byText(sel: string, text: string, exact = false): HTMLElement | null {
   const t = text.toLowerCase();
@@ -174,13 +188,19 @@ const STEPS: Step[] = [
   },
   {
     path: "/",
-    secs: 16,
+    secs: 22,
     title: "Best Time to Visit",
     text: "The crowd meter shows rush hours vs. quiet hours",
     scroll: false,
     spotTitle: false,
     run: async (c) => {
       await c.until(1.5);
+      c.live(() => ({
+        title: "Best time · live",
+        items: [`Quiet: ${under("Best Quiet Window") || "…"}`, `Rush: ${under("Peak Rush Window") || "…"}`],
+        note: "Changes with the day and place you pick",
+        pos: "bottom-right",
+      }));
       await c.scrollToEl(qs("#crowd-meter"), "top");
       await c.wait(0.6);
       await c.click(byText("button", "Saturday"));
@@ -203,7 +223,7 @@ const STEPS: Step[] = [
     spotTitle: false,
     run: async (c) => {
       await c.until(1.5);
-      c.panel({ title: "Dark mode & Español", items: ["Whole site re-themes live", "Spanish swaps every label on the page", "Choice is remembered on this device"] });
+      c.panel({ title: "Dark mode & Español", items: ["Whole site re-themes live", "Spanish translates the main labels and menus", "Choice is remembered on this device"] });
       await c.click(byText("button.tool-btn", "Dark"));
       await c.until(5);
       await c.click(byText("button.tool-btn", "Español"));
@@ -214,6 +234,55 @@ const STEPS: Step[] = [
       c.panel(null);
     },
     cleanup: resetTheme,
+  },
+  {
+    path: "/",
+    secs: 24,
+    title: "Everything in One Place",
+    text: "Every feature, with accessibility and language built in",
+    scroll: false,
+    spotTitle: false,
+    run: async (c) => {
+      await c.until(1.5);
+      c.panel({
+        title: "What's on the site",
+        items: [
+          "Live weather, lake level & air quality",
+          "Cmd/Ctrl + K search across the county",
+          "Interactive map with satellite view",
+          "Parks, events & community directory",
+          "Crowd meter & trip planner",
+          "Favorites saved on this device",
+          "Dark mode",
+          "Español for the main labels",
+          "Accessibility toolbar",
+        ],
+        note: "Works on every page",
+      });
+      await c.until(4);
+      await c.click(byText("button.tool-btn", "Dark"));
+      await c.until(6.5);
+      await c.click(byText("button.tool-btn", "Español"));
+      await c.until(10);
+      await c.click(byText("button.tool-btn", "English"));
+      await c.wait(0.6);
+      await c.click(byText("button.tool-btn", "Light"));
+      await c.until(12);
+      await c.click(qs('button[aria-label="Toggle Accessibility Toolbar"]'));
+      await c.wait(0.6);
+      await c.click(a11yRow("High Contrast"));
+      await c.wait(1.6);
+      await c.click(byText("button", "Large (112%)"));
+      await c.wait(1.6);
+      await c.click(byText("button", "Reset Defaults"));
+      await c.wait(0.5);
+      await c.click(qs('button[aria-label="Toggle Accessibility Toolbar"]'));
+      c.panel(null);
+    },
+    cleanup: async () => {
+      resetTheme();
+      await resetA11y();
+    },
   },
   {
     path: "/map",
@@ -253,6 +322,14 @@ const STEPS: Step[] = [
     scroll: { from: 15, to: 22 },
     run: async (c) => {
       await c.until(3.5);
+      c.live(() => {
+        const names = cardNames();
+        return {
+          title: "Parks · live",
+          items: names.length ? names.slice(0, 7) : ["No matches yet"],
+          note: `${names.length} shown`,
+        };
+      });
       const search = await c.find(() => qs('input[placeholder^="Search parks"]'), 3);
       await c.type(search, "trail", 8);
       await c.wait(2.4);
@@ -271,6 +348,15 @@ const STEPS: Step[] = [
     scroll: { from: 22, to: 26.5 },
     run: async (c) => {
       await c.until(3.5);
+      c.live(() => {
+        const typed = ((qs('input[placeholder^="e.g. Tam"]') as HTMLInputElement | null)?.value || "").trim();
+        const names = cardNames();
+        return {
+          title: "Community list · live",
+          items: [...(typed ? [`+ ${typed}`] : []), ...names].slice(0, 8),
+          note: typed ? "Added to the list the moment you submit" : `${names.length} businesses in this view`,
+        };
+      });
       await c.click(byText("button", "Dining"));
       await c.wait(1.6);
       await c.click(byText("button", "Town Centers"));
@@ -296,13 +382,22 @@ const STEPS: Step[] = [
     run: async (c) => {
       await c.until(3.5);
       c.live(() => {
-        const vals = qa("main input, main select, main textarea")
-          .map((e) => (e as HTMLInputElement).value.trim())
-          .filter(Boolean);
+        const field = (label: string, sel: string) => {
+          const v = ((qs(sel) as HTMLInputElement | HTMLTextAreaElement | null)?.value || "").trim();
+          const shown = v.length > 36 ? v.slice(0, 36) + "…" : v;
+          return { done: !!v, text: `${label}: ${shown || "—"}` };
+        };
+        const rows = [
+          field("Name", 'input[placeholder^="e.g. Cherry"]'),
+          field("Address", 'input[placeholder^="e.g. 6365"]'),
+          field("Phone", 'input[placeholder^="e.g. (770)"]'),
+          field("About", "main textarea"),
+        ];
+        const filled = rows.filter((r) => r.done).length;
         return {
-          title: "Live directory preview",
-          items: vals.length ? vals : ["Your listing will appear here"],
-          note: "Approved instantly after submit",
+          title: "Your listing · live",
+          items: rows.map((r) => `${r.done ? "✓" : "○"} ${r.text}`),
+          note: `${filled} of 4 filled in · approved instantly`,
         };
       });
       await c.type(await c.find(() => qs('input[placeholder^="e.g. Cherry Street"]'), 3), "Sample Coffee Co.", 20);
@@ -318,7 +413,7 @@ const STEPS: Step[] = [
   },
   {
     path: "/events",
-    secs: 20,
+    secs: 30,
     title: "Events",
     text: "What is happening in Forsyth",
     scroll: false,
@@ -332,23 +427,63 @@ const STEPS: Step[] = [
       await c.wait(1.2);
       await c.click(byText("button", "Submit Community Event"));
       const title = await c.find(() => qs('input[placeholder^="e.g. Vickery"]'), 3);
+      c.live(() => {
+        const val = (sel: string) => ((qs(sel) as HTMLInputElement | null)?.value || "").trim();
+        const name = val('input[placeholder^="e.g. Vickery"]');
+        const when = val('input[placeholder^="e.g. October"]');
+        const where = val('input[placeholder^="e.g. Cumming Fairgrounds"]');
+        const mine = name ? [[name, when, where].filter(Boolean).join(" · ")] : [];
+        const names = cardNames();
+        return {
+          title: "Top of Events · live",
+          items: [...mine, ...names].slice(0, 6),
+          note: name ? "Goes to the top of the list once submitted" : "Start typing to preview it",
+        };
+      });
       await c.wait(0.4);
       await c.type(title, "Vickery Village Fall 5K", 18);
-      await c.wait(1.2);
+      await c.wait(0.4);
+      await c.type(qs('input[placeholder^="e.g. October"]'), "October 24, 2026", 20);
+      await c.wait(0.4);
+      await c.type(qs('input[placeholder^="e.g. Cumming Fairgrounds"]'), "Vickery Village", 18);
+      await c.wait(1.6);
       await c.click(qs("div.fixed.inset-0 button.absolute"));
     },
   },
   {
     path: "/civic",
-    secs: 12,
+    secs: 26,
     title: "Civic Leaders",
     text: "Sheriff and government officials",
+    scroll: false,
+    run: async (c) => {
+      await c.until(2);
+      const search = await c.find(() => qs('input[placeholder^="Search departments"]'), 3);
+      await c.type(search, "Sheriff", 9);
+      await c.wait(2.2);
+      c.clear(search);
+      await c.wait(0.4);
+      await c.click(byText("main button", "Safety", true));
+      await c.wait(2.2);
+      await c.click(byText("main button", "Courts", true));
+      await c.wait(2);
+      await c.click(byText("main button", "All", true));
+    },
   },
   {
     path: "/emergency",
-    secs: 10,
+    secs: 18,
     title: "Emergency & Safety",
     text: "Important numbers in one place",
+    scroll: false,
+    run: async (c) => {
+      await c.until(1.5);
+      await c.click(byText("button", "Medical", true));
+      await c.wait(2.2);
+      await c.click(byText("button", "Utility", true));
+      await c.wait(2);
+      await c.click(byText("button", "All", true));
+    },
   },
   {
     path: "/history",
@@ -374,9 +509,16 @@ const STEPS: Step[] = [
   },
   {
     path: "/sources",
-    secs: 8,
+    secs: 10,
     title: "Sources & Credits",
     text: "Where our info comes from",
+    spotTitle: false,
+    run: async (c) => {
+      await c.until(1);
+      c.spot(qs("main h3"));
+      await c.until(4);
+      c.unspot();
+    },
   },
   {
     path: "/favorites",
@@ -408,6 +550,20 @@ const STEPS: Step[] = [
     scroll: false,
     run: async (c) => {
       await c.until(3);
+      c.live(() => {
+        const stops = qa("main ol > li");
+        const rows = stops.slice(0, 5).map((li) => {
+          const time = li.querySelector("span")?.textContent?.trim() || "";
+          const name = li.querySelector("strong")?.textContent?.trim() || "";
+          return `${time} · ${name}`;
+        });
+        return {
+          title: "Your day · live",
+          items: rows.length ? rows : ["No stops yet"],
+          note: `${stops.length} ${stops.length === 1 ? "stop" : "stops"} · 2-hour slots`,
+          pos: "bottom-right",
+        };
+      });
       await c.pick(await c.find(() => qs("main select"), 3), 3); // 10:00 AM
       const boxes = qa('main input[type="checkbox"]');
       const picks = Array.from(new Set([0, 3, 10, 12].filter((n) => n < boxes.length)));
@@ -432,8 +588,8 @@ const STEPS: Step[] = [
       await c.until(3);
       c.panel({
         title: "Accessibility toolbar",
-        items: ["High contrast mode", "Text size: 112% / 125%", "Dyslexia-friendly font", "Reading guide line", "Reduced motion", "Works without a mouse"],
-        note: "Built to WCAG 2.1 AA",
+        items: ["High contrast mode", "Text size: 112% / 125%", "Dyslexia-friendly font", "Reading guide bar", "Reduce motion"],
+        note: "Designed around WCAG 2.1 guidelines",
       });
       await c.click(qs('button[aria-label="Toggle Accessibility Toolbar"]'));
       await c.wait(0.6);
@@ -454,19 +610,28 @@ const STEPS: Step[] = [
   },
   {
     path: "/copyright",
-    secs: 6,
+    secs: 10,
     title: "Copyright",
     text: "Jordan Daniels & DJ Reddish",
-  },
-  {
-    path: "/fbla",
-    secs: 10,
-    title: "Built for FBLA 2026",
-    text: "Thank you!",
     scroll: false,
     run: async (c) => {
       await c.until(3);
-      c.endCard(true);
+      c.endCard(true); // closing card; the tour ends after this chapter
+    },
+  },
+  {
+    path: "/judge",
+    secs: 22,
+    title: "Judge Portal",
+    text: "Rubric scorecard, presentation script and design tokens",
+    scroll: false,
+    run: async (c) => {
+      await c.until(3);
+      await c.click(byText("button", "Rubric Scorecard"));
+      await c.wait(2.5);
+      await c.click(byText("button", "4-Minute Presentation"));
+      await c.wait(2.5);
+      await c.click(byText("button", "Design"));
     },
   },
 ];
@@ -492,8 +657,6 @@ export default function DemoTour() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [count, setCount] = useState(3);
-  const [step, setStep] = useState(0);
-  const [cardOn, setCardOn] = useState(false);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState(true);
   const [barOn, setBarOn] = useState(false);
@@ -598,7 +761,6 @@ export default function DemoTour() {
     let last = performance.now();
     let token = 0; // changes every chapter so old scripts stop
     let paused = false;
-    let cardShown = false;
     let raf = 0;
     let spotEl: HTMLElement | null = null;
     let liveGet: (() => Panel | null) | null = null;
@@ -640,13 +802,14 @@ export default function DemoTour() {
       d.setAttribute("data-tour-ui", "");
       Object.assign(d.style, {
         position: "fixed",
-        left: x - 22 + "px",
-        top: y - 22 + "px",
-        width: "44px",
-        height: "44px",
+        left: x - 26 + "px",
+        top: y - 26 + "px",
+        width: "52px",
+        height: "52px",
         borderRadius: "50%",
-        border: "3px solid #E29578",
-        background: "rgba(226,149,120,.25)",
+        border: "2px solid rgba(226,149,120,.95)",
+        background: "radial-gradient(circle, rgba(226,149,120,.35) 0%, rgba(226,149,120,.08) 70%)",
+        boxShadow: "0 0 0 6px rgba(226,149,120,.12)",
         pointerEvents: "none",
         zIndex: "85",
       });
@@ -655,14 +818,23 @@ export default function DemoTour() {
         setTimeout(() => d.remove(), 300);
         return;
       }
-      const a = d.animate([{ transform: "scale(.3)", opacity: 0.9 }, { transform: "scale(1.8)", opacity: 0 }], {
-        duration: 600,
-        easing: "ease-out",
-      });
+      const a = d.animate(
+        [
+          { transform: "scale(.4)", opacity: 1 },
+          { transform: "scale(1.5)", opacity: 0.6, offset: 0.5 },
+          { transform: "scale(1.9)", opacity: 0 },
+        ],
+        { duration: 700, easing: "cubic-bezier(.2,.7,.3,1)" },
+      );
       a.onfinish = () => d.remove();
       cursorRef.current?.firstElementChild?.animate(
-        [{ transform: "scale(1)" }, { transform: "scale(.8)" }, { transform: "scale(1)" }],
-        { duration: 240 },
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(.84)", offset: 0.35 },
+          { transform: "scale(1.04)", offset: 0.7 },
+          { transform: "scale(1)" },
+        ],
+        { duration: 260, easing: "ease-out" },
       );
     }
 
@@ -821,9 +993,6 @@ export default function DemoTour() {
       scr.init = false;
       paused = false;
       setPaused(false);
-      setStep(i);
-      setCardOn(true);
-      cardShown = true;
       router.push(STEPS[i].path);
       window.scrollTo({
         top: 0,
@@ -856,10 +1025,6 @@ export default function DemoTour() {
 
       if (progressRef.current) {
         progressRef.current.style.width = Math.min(100, ((OFFSETS[idx] + clock) / TOTAL) * 100) + "%";
-      }
-      if (cardShown && clock > 3) {
-        cardShown = false;
-        setCardOn(false);
       }
 
       // wake up scripts whose time has come
@@ -946,14 +1111,12 @@ export default function DemoTour() {
       if (spotRef.current) spotRef.current.style.opacity = "0";
       setEndCard(false);
       setPanel(null);
-      setCardOn(false);
       setPaused(false);
       window.scrollTo({ top: 0 });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  const cur = STEPS[step];
   const running = phase === "run";
 
   const btn =
@@ -969,16 +1132,27 @@ export default function DemoTour() {
         style={{ position: "fixed", left: 0, top: 0, zIndex: 90, pointerEvents: "none", opacity: 0, willChange: "transform" }}
       >
         <svg
-          width="30"
-          height="30"
-          viewBox="0 0 30 30"
-          style={{ display: "block", transformOrigin: "3px 2px", filter: "drop-shadow(0 3px 4px rgba(0,0,0,.45))" }}
+          width="27"
+          height="39"
+          viewBox="3 2 18 26"
+          style={{
+            display: "block",
+            overflow: "visible",
+            transformOrigin: "0 0",
+            filter: "drop-shadow(0 4px 5px rgba(0,0,0,.38))",
+          }}
         >
+          <defs>
+            <linearGradient id="aaf-cursor-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#ffffff" />
+              <stop offset="1" stopColor="#dfe9e6" />
+            </linearGradient>
+          </defs>
           <path
             d="M3 2 L3 23 L8.5 18 L12.5 27 L16 25.4 L12 16.6 L19.5 16.6 Z"
-            fill="#fff"
-            stroke="#1B3B36"
-            strokeWidth="1.6"
+            fill="url(#aaf-cursor-fill)"
+            stroke="#0F1F1C"
+            strokeWidth="1.3"
             strokeLinejoin="round"
           />
         </svg>
@@ -1023,22 +1197,6 @@ export default function DemoTour() {
             <div ref={progressRef} className="h-full bg-[#E29578]" style={{ width: "0%" }} />
           </div>
 
-          {/* chapter title card for the first 3 seconds of each page */}
-          <div
-            data-tour-ui
-            aria-live="polite"
-            className={
-              "fixed left-1/2 bottom-16 z-[70] -translate-x-1/2 bg-[#1B3B36]/95 text-white px-8 py-4 rounded-2xl shadow-2xl text-center transition-all duration-700 " +
-              (cardOn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none")
-            }
-          >
-            <p className="text-[11px] tracking-widest uppercase text-[#E29578] font-bold">
-              {step + 1} of {STEPS.length}
-            </p>
-            <p className="text-2xl font-extrabold">{cur.title}</p>
-            <p className="text-sm text-white/80">{cur.text}</p>
-          </div>
-
           {/* control bar - only visible while the mouse is moving, or when paused */}
           <div
             data-tour-ui
@@ -1074,12 +1232,12 @@ export default function DemoTour() {
       {running && hud && panel && (
         <div
           data-tour-ui
-          className="fixed right-4 top-24 z-[70] w-72 max-w-[calc(100vw-2rem)] bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 p-4 animate-in fade-in slide-in-from-right-4 duration-300"
+          className={`fixed right-4 ${panel.pos === "bottom-right" ? "bottom-24" : "top-24"} z-[70] w-72 max-w-[calc(100vw-2rem)] bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 p-4 aaf-panel-in`}
         >
           <p className="text-[10px] tracking-widest uppercase text-[#2A8C82] font-black">{panel.title}</p>
           <ul className="mt-2 space-y-1.5">
             {panel.items.map((it, i) => (
-              <li key={i + it} className="text-sm font-semibold flex gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
+              <li key={i + it} className="text-sm font-semibold flex gap-2 aaf-item-in">
                 <span className="text-[#E29578]">●</span>
                 <span className="break-words">{it}</span>
               </li>

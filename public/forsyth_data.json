@@ -1,0 +1,244 @@
+{
+  "county": "Forsyth County, Georgia",
+  "district": "Forsyth County Schools (FCS)",
+  "history": [
+    {
+      "year": "1832",
+      "title": "Establishment of Forsyth County",
+      "description": "Forsyth County was created by the Georgia General Assembly from part of the Cherokee County territory, named in honor of John Forsyth, 33rd Governor of Georgia and Secretary of State.",
+      "image": "Forsyth_County_courthouse.jpg",
+      "category": "Civic History"
+    },
+    {
+      "year": "1901",
+      "title": "Construction of Poole's Mill Covered Bridge",
+      "description": "The iconic Town lattice-truss covered bridge was built across Settendown Creek by Bud Gentry. It remains a cherished historical landmark in Ball Ground / Forsyth County.",
+      "image": "pooles-mill-covered-bridge-1-forsyth-county-ga-photograph-copyright-brian-brown-vanishing-georgia-usa-2022.webp",
+      "category": "Historical Landmark"
+    },
+    {
+      "year": "1956",
+      "title": "Creation of Lake Lanier & Buford Dam",
+      "description": "The US Army Corps of Engineers completed Buford Dam on the Chattahoochee River, forming Lake Lanier with nearly 38,000 acres of water surface and 692 miles of shoreline.",
+      "image": "lake-lanier-boating-fishing_240591beeb8.jpg",
+      "category": "Geography & Recreation"
+    },
+    {
+      "year": "2018 - 2026",
+      "title": "Modern Commercial & Cultural Growth",
+      "description": "The opening of Halcyon (2018) and the new Cumming City Center provided Forsyth County with vibrant pedestrian villages, outdoor amphitheaters, and thriving local business hubs.",
+      "image": "interior-hero.jpg",
+      "category": "Modern Development"
+    }
+  ],
+  "schools": {
+    "high": [
+      {
+        "id": "alliance-academy",
+        "name": "Alliance Academy for Innovation",
+        "type": "Career & STEM Academy",
+        "mascot": "Innovators",
+        "colors": ["Navy", "Silver"],
+        "address": "1100 Lan-Mar Rd, Cumming, GA 30041",
+        "lat": 34.1884,
+        "lng": -84.1402,
+        "description": "State-of-the-art career and TVET academy with pathways in Aerospace, Cybersecurity, Energy, Healthcare, and Mechatronics."
+      },
+      {
+        "id": "lambert-high",
+        "name": "Lambert High School",
+        "type": "Public High School",
+        "mascot": "Longhorns",
+        "colors": ["Crimson", "White"],
+        "address": "805 Nichols Rd, Suwanee, GA 30024",
+        "lat": 34.0735,
+        "lng": -84.1352,
+        "description": "National Blue Ribbon School recognized for academic excellence, AP programs, and active FBLA chapter."
+      },
+      {
+        "id": "south-forsyth-high",
+        "name": "South Forsyth High School",
+        "type": "Public High School",
+        "mascot": "War Eagles",
+        "colors": ["Royal Blue", "Silver"],
+        "address": "585 Peachtree Pkwy, Cumming, GA 30040",
+        "lat": 34.1473,
+        "lng": -84.1537,
+        "description": "Established IB World School offering International Baccalaureate Diploma program and STEM certifications."
+      },
+      {
+        "id": "denmark-high",
+        "name": "Denmark High School",
+        "type": "Public High School",
+        "mascot": "Danes",
+        "colors": ["Navy", "Cyan"],
+        "address": "6400 Mullinax Rd, Alpharetta, GA 30004",
+        "lat": 34.1205,
+        "lng": -84.2268,
+        "description": "Opened in 2018 featuring specialized Veterinary Science and Agribusiness learning facilities."
+      },
+      {
+        "id": "west-forsyth-high",
+        "name": "West Forsyth High School",
+        "type": "Public High School",
+        "mascot": "Wolverines",
+        "colors": ["Navy", "Gold"],
+        "address": "4155 Drew Rd, Cumming, GA 30040",
+        "lat": 34.1812,
+        "lng": -84.2125,
+        "description": "AP Honor School offering extensive athletics, performing arts, and CTE pathways."
+      },
+      {
+        "id": "north-forsyth-high",
+        "name": "North Forsyth High School",
+        "type": "Public High School",
+        "mascot": "Raiders",
+        "colors": ["Black", "Gold"],
+        "address": "3635 Coal Mountain Dr, Cumming, GA 30028",
+        "lat": 34.2708,
+        "lng": -84.1362,
+        "description": "Home to MCJROTC cadet program, Robotics, and Coal Mountain community traditions."
+      },
+      {
+        "id": "east-forsyth-high",
+        "name": "East Forsyth High School",
+        "type": "Public High School",
+        "mascot": "Broncos",
+        "colors": ["Navy", "Bronze"],
+        "address": "8945 Jot Em Down Rd, Gainesville, GA 30506",
+        "lat": 34.2885,
+        "lng": -84.0251,
+        "description": "Forsyth County's newest high school campus opened in 2021 with modern digital learning environments."
+      }
+    ],
+    "middle": [
+      { "id": "desana-middle", "name": "Desana Middle School", "mascot": "Dragons", "address": "625 James Rd, Alpharetta, GA 30004", "feederTo": "Denmark High School" },
+      { "id": "hendricks-middle", "name": "Hendricks Middle School", "mascot": "Hawks", "address": "4950 Hyde Rd, Cumming, GA 30040", "feederTo": "West Forsyth High School" },
+      { "id": "lakeside-middle", "name": "Lakeside Middle School", "mascot": "Lions", "address": "2565 Echols Rd, Cumming, GA 30041", "feederTo": "South Forsyth / East Forsyth High School" },
+      { "id": "liberty-middle", "name": "Liberty Middle School", "mascot": "Patriots", "address": "740 West Port Dr, Cumming, GA 30040", "feederTo": "North Forsyth High School" },
+      { "id": "little-mill-middle", "name": "Little Mill Middle School", "mascot": "Mustangs", "address": "6800 Little Mill Rd, Cumming, GA 30041", "feederTo": "East Forsyth High School" },
+      { "id": "otwell-middle", "name": "Otwell Middle School", "mascot": "Bulldogs", "address": "605 Tribble Gap Rd, Cumming, GA 30040", "feederTo": "Central Cumming / West Forsyth High School" },
+      { "id": "piney-grove-middle", "name": "Piney Grove Middle School", "mascot": "Grizzlies", "address": "8135 Peachtree Pkwy, Cumming, GA 30041", "feederTo": "South Forsyth High School" },
+      { "id": "riverwatch-middle", "name": "Riverwatch Middle School", "mascot": "Panthers", "address": "610 James Burgess Rd, Suwanee, GA 30024", "feederTo": "Lambert High School" },
+      { "id": "vickery-creek-middle", "name": "Vickery Creek Middle School", "mascot": "Vipers", "address": "6240 Post Rd, Cumming, GA 30040", "feederTo": "West Forsyth High School" },
+      { "id": "north-forsyth-middle", "name": "North Forsyth Middle School", "mascot": "Wildcats", "address": "3645 Coal Mountain Dr, Cumming, GA 30028", "feederTo": "North Forsyth High School" }
+    ],
+    "elementary": [
+      { "id": "big-creek-elem", "name": "Big Creek Elementary", "mascot": "Wildcats", "address": "1994 Peachtree Pkwy, Cumming, GA 30041" },
+      { "id": "brandywine-elem", "name": "Brandywine Elementary", "mascot": "Badgers", "address": "175 Martin Dr, Alpharetta, GA 30004" },
+      { "id": "brookwood-elem", "name": "Brookwood Elementary", "mascot": "Bobcats", "address": "2980 Vaughan Dr, Cumming, GA 30041" },
+      { "id": "daves-creek-elem", "name": "Daves Creek Elementary", "mascot": "Dolphins", "address": "3740 Trammel Rd, Cumming, GA 30041", "note": "National Blue Ribbon School" },
+      { "id": "pooles-mill-elem", "name": "Poole's Mill Elementary", "mascot": "Pirates", "address": "7110 Heardsville Rd, Ball Ground, GA 30107" },
+      { "id": "whitlow-elem", "name": "Whitlow Elementary", "mascot": "Wolves", "address": "3600 Castleberry Rd, Cumming, GA 30040", "note": "Georgia STEM Certified" }
+    ]
+  },
+  "parks": [
+    {
+      "id": "sawnee-mountain",
+      "name": "Sawnee Mountain Preserve",
+      "category": "Nature & Hiking",
+      "address": "4075 Spot Rd, Cumming, GA 30040",
+      "lat": 34.2403,
+      "lng": -84.1481,
+      "amenities": ["Hiking Trails", "Indian Seats Overlook", "Visitor Center", "Climbing Tower", "Tree Canopy"],
+      "highlight": "960-acre preserve featuring panoramic views of the Blue Ridge Mountains from the Indian Seats."
+    },
+    {
+      "id": "pooles-mill",
+      "name": "Poole's Mill Park",
+      "category": "Historic Landmark & Park",
+      "address": "7725 Poole's Mill Rd, Ball Ground, GA 30107",
+      "lat": 34.2921,
+      "lng": -84.2415,
+      "amenities": ["Covered Bridge (1901)", "Playground", "Pavilion", "Settendown Creek Access"],
+      "highlight": "Historic 1901 lattice-truss covered bridge crossing Settendown Creek."
+    },
+    {
+      "id": "big-creek-greenway",
+      "name": "Big Creek Greenway",
+      "category": "Trails & Cycling",
+      "address": "Fowler Park Access, 4110 Carolene Way, Cumming, GA 30040",
+      "lat": 34.1294,
+      "lng": -84.2102,
+      "amenities": ["Paved Multi-use Trail", "Biking", "Running", "Boardwalks"],
+      "highlight": "11+ mile continuous scenic paved trail connecting Forsyth County to Alpharetta."
+    },
+    {
+      "id": "central-park",
+      "name": "Central Park",
+      "category": "Sports & Recreation",
+      "address": "2300 Keith Bridge Rd, Cumming, GA 30040",
+      "lat": 34.2389,
+      "lng": -84.1132,
+      "amenities": ["Disc Golf Course", "Dog Park", "Tennis Courts", "Rec Center", "Baseball Fields"],
+      "highlight": "Major 160-acre sports complex featuring disc golf, indoor gym, and off-leash dog park."
+    },
+    {
+      "id": "mary-alice-park",
+      "name": "Mary Alice Park (Lake Lanier)",
+      "category": "Lake & Water Sports",
+      "address": "1820 Mary Alice Park Rd, Cumming, GA 30040",
+      "lat": 34.1951,
+      "lng": -84.0921,
+      "amenities": ["Beach & Swimming", "Boat Ramps", "Picnic Pavilions", "Lake Views"],
+      "highlight": "Premier public access park on Lake Lanier with sandy beach and boat launching facilities."
+    }
+  ],
+  "businesses": [
+    {
+      "id": "halcyon",
+      "rank": 1,
+      "name": "Halcyon Forsyth",
+      "category": "Mixed-Use / Dining & Retail",
+      "address": "6365 Halcyon Way, Alpharetta, GA 30005",
+      "lat": 34.1118,
+      "lng": -84.2235,
+      "badge": "Top Destination",
+      "description": "135-acre village featuring local restaurants, Market Hall, boutiques, and direct access to the Greenway."
+    },
+    {
+      "id": "cumming-city-center",
+      "rank": 2,
+      "name": "Cumming City Center",
+      "category": "Downtown Civic & Dining Hub",
+      "address": "435 Canton Rd, Cumming, GA 30040",
+      "lat": 34.2081,
+      "lng": -84.1432,
+      "badge": "New Civic Landmark",
+      "description": "Vibrant downtown district with Lou Sobh Amphitheater, local dining, walking trails, and mini-golf."
+    },
+    {
+      "id": "dutch-monkey-doughnuts",
+      "rank": 3,
+      "name": "Dutch Monkey Doughnuts",
+      "category": "Bakery & Café",
+      "address": "3075 Peachtree Pkwy, Cumming, GA 30041",
+      "lat": 34.1362,
+      "lng": -84.1528,
+      "badge": "Food Network Featured",
+      "description": "Nationally acclaimed scratch bakery specializing in gourmet handcrafted doughnuts and espresso."
+    },
+    {
+      "id": "cherry-street-brewing",
+      "rank": 4,
+      "name": "Cherry Street Brewing",
+      "category": "Craft Brewery & Grill",
+      "address": "5810 Bond St, Cumming, GA 30040 (Vickery Village)",
+      "lat": 34.1521,
+      "lng": -84.2095,
+      "badge": "Award Winning",
+      "description": "Community-focused brewpub founded in Forsyth County featuring farm-to-table food and craft beverages."
+    },
+    {
+      "id": "collection-at-forsyth",
+      "rank": 5,
+      "name": "The Collection at Forsyth",
+      "category": "Shopping & Entertainment",
+      "address": "410 Peachtree Pkwy, Cumming, GA 30041",
+      "lat": 34.1512,
+      "lng": -84.1554,
+      "badge": "Premier Retail",
+      "description": "Open-air lifestyle shopping center featuring AMC Theatres, local dining, and major retail outlets."
+    }
+  ]
+}

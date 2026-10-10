@@ -15,6 +15,7 @@ import BetaNoticeBanner from "./components/BetaNoticeBanner";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import BugReportButton from "./components/BugReportButton";
 import A11yEnhancer from "./components/A11yEnhancer";
+import SiteTools from "./components/SiteTools";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -63,6 +64,9 @@ export default function RootLayout({
 
         {/* Accessibility Floating Toolbar */}
         <AccessibilityToolbar />
+
+        {/* Dark mode, Spanish, share, auto tour */}
+        <SiteTools />
 
         {/* Bug Report (sends to Discord) */}
         <BugReportButton />

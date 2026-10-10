@@ -141,6 +141,10 @@ export default function Footer() {
               Cookie Preferences
             </button>
             <span>•</span>
+            <Link href="/copyright" className="hover:text-white">Copyright</Link>
+            <Link href="/accessibility" className="hover:text-white">Accessibility</Link>
+            <Link href="/favorites" className="hover:text-white">Favorites</Link>
+            <Link href="/trip-planner" className="hover:text-white">Trip Planner</Link>
             <Link href="/sources" className="hover:text-white">
               Citations & Licenses
             </Link>

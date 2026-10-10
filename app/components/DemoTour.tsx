@@ -1,84 +1,109 @@
 "use client";
 
 // Auto tour - goes through the whole site in 4 minutes (240s) so we can record a voiceover.
-// Press Esc or the Stop button to end it.
+// Start it from the Admin page ("Start Presentation Tour"). Esc stops it.
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const STEPS = [
-  { path: "/", secs: 30, text: "Home - live weather, lake level, air quality and pollen" },
-  { path: "/map", secs: 25, text: "Live interactive map of Forsyth County" },
-  { path: "/parks", secs: 22, text: "Parks directory and crowd meter" },
-  { path: "/top-10", secs: 22, text: "Community Businesses" },
-  { path: "/submit-business", secs: 15, text: "Businesses can submit themselves" },
-  { path: "/events", secs: 15, text: "Upcoming events" },
-  { path: "/civic", secs: 15, text: "Government and civic leaders" },
-  { path: "/emergency", secs: 12, text: "Emergency and safety info" },
-  { path: "/history", secs: 18, text: "History timeline and Poole's Mill" },
-  { path: "/sources", secs: 10, text: "Sources and credits" },
-  { path: "/favorites", secs: 10, text: "Favorites" },
-  { path: "/trip-planner", secs: 12, text: "Trip planner" },
-  { path: "/accessibility", secs: 12, text: "Accessibility statement" },
-  { path: "/copyright", secs: 10, text: "Copyright - Jordan Daniels & DJ Reddish" },
-  { path: "/fbla", secs: 12, text: "Built for FBLA 2026" },
+  { path: "/", secs: 30, title: "Welcome to All Around Forsyth", text: "Live weather, lake level, air quality and pollen" },
+  { path: "/map", secs: 25, title: "Live Interactive Map", text: "Every park and business in the county" },
+  { path: "/parks", secs: 22, title: "Parks & Crowd Meter", text: "Find the best time to visit" },
+  { path: "/top-10", secs: 22, title: "Community Businesses", text: "Local spots our community loves" },
+  { path: "/submit-business", secs: 15, title: "Add Your Business", text: "Approved instantly" },
+  { path: "/events", secs: 15, title: "Events", text: "What is happening in Forsyth" },
+  { path: "/civic", secs: 15, title: "Civic Leaders", text: "Sheriff and government officials" },
+  { path: "/emergency", secs: 12, title: "Emergency & Safety", text: "Important numbers in one place" },
+  { path: "/history", secs: 18, title: "History", text: "Timeline and Poole's Mill Covered Bridge" },
+  { path: "/sources", secs: 10, title: "Sources & Credits", text: "Where our info comes from" },
+  { path: "/favorites", secs: 10, title: "Favorites", text: "Save the places you love" },
+  { path: "/trip-planner", secs: 12, title: "Trip Planner", text: "Build a printable day plan" },
+  { path: "/accessibility", secs: 12, title: "Accessibility", text: "Built for everyone" },
+  { path: "/copyright", secs: 10, title: "Copyright", text: "Jordan Daniels & DJ Reddish" },
+  { path: "/fbla", secs: 12, title: "Built for FBLA 2026", text: "Thank you!" },
 ];
+
+const TOTAL = STEPS.reduce((a, s) => a + s.secs, 0);
+
+// slow at the start and end, fast in the middle
+function ease(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
 
 export default function DemoTour() {
   const router = useRouter();
   const [running, setRunning] = useState(false);
   const [step, setStep] = useState(0);
-  const [left, setLeft] = useState(0);
-  const [showBar, setShowBar] = useState(true);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [cardOn, setCardOn] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const raf = useRef<number | null>(null);
 
   function stop() {
-    if (timer.current) clearInterval(timer.current);
-    timer.current = null;
+    if (raf.current) cancelAnimationFrame(raf.current);
+    raf.current = null;
     setRunning(false);
+    setCardOn(false);
     window.scrollTo({ top: 0 });
   }
 
-  function start() {
-    setRunning(true);
-    setStep(-1);
-  }
+  // admin page fires this event
+  useEffect(() => {
+    function onStart() {
+      setRunning(true);
+    }
+    window.addEventListener("aaf-start-tour", onStart);
+    return () => window.removeEventListener("aaf-start-tour", onStart);
+  }, []);
 
-  // main loop: ticks every 100ms
   useEffect(() => {
     if (!running) return;
-    let idx = -1;
-    let t0 = 0;
+    let idx = 0;
+    let t0 = performance.now();
+    const startAll = t0;
+    let lastScroll = 0;
 
     function go(i: number) {
       idx = i;
-      t0 = Date.now();
+      t0 = performance.now();
+      lastScroll = 0;
       setStep(i);
+      setCardOn(true);
       router.push(STEPS[i].path);
       window.scrollTo({ top: 0 });
     }
     go(0);
 
-    timer.current = setInterval(() => {
+    function frame(now: number) {
       const s = STEPS[idx];
-      const sec = (Date.now() - t0) / 1000;
-      setLeft(Math.max(0, Math.round(s.secs - sec)));
+      const sec = (now - t0) / 1000;
+      setProgress((now - startAll) / 1000 / TOTAL);
 
-      // wait 2s for page to load, then scroll down until 90% of the time
-      const prog = Math.min(1, Math.max(0, (sec - 2) / (s.secs * 0.9 - 2)));
+      // card shows for the first 3 seconds
+      if (sec > 3) setCardOn(false);
+
+      // scroll from 3s until 92% of the step, with easing
+      const p = Math.min(1, Math.max(0, (sec - 3) / (s.secs * 0.92 - 3)));
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      if (max > 0) window.scrollTo({ top: max * prog });
+      if (max > 0 && sec > 1.5) {
+        const target = max * ease(p);
+        // glide toward the target so there are no jumps
+        lastScroll = lastScroll + (target - lastScroll) * 0.12;
+        window.scrollTo({ top: lastScroll, behavior: "instant" as ScrollBehavior });
+      }
 
       if (sec >= s.secs) {
         if (idx + 1 >= STEPS.length) {
           stop();
-        } else {
-          go(idx + 1);
+          return;
         }
+        go(idx + 1);
       }
-    }, 100);
+      raf.current = requestAnimationFrame(frame);
+    }
+    raf.current = requestAnimationFrame(frame);
 
     return () => {
-      if (timer.current) clearInterval(timer.current);
+      if (raf.current) cancelAnimationFrame(raf.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
@@ -92,34 +117,36 @@ export default function DemoTour() {
     return () => window.removeEventListener("keydown", onKey);
   }, [running]);
 
-  if (!running) {
-    return (
-      <button
-        onClick={start}
-        className="tool-btn bg-[#E29578] text-[#1B3B36] font-extrabold"
-        aria-label="Start the 4 minute automatic website tour"
-      >
-        ▶ Auto Tour (4 min)
-      </button>
-    );
-  }
+  if (!running) return null;
 
-  const cur = STEPS[Math.max(0, step)];
+  const cur = STEPS[step];
   return (
     <>
-      {showBar && (
-        <div role="status" className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] bg-black/80 text-white text-sm px-5 py-2 rounded-full shadow-xl flex items-center gap-3">
-          <span className="font-bold">{Math.max(1, step + 1)}/{STEPS.length}</span>
-          <span>{cur.text}</span>
-          <span className="opacity-70">{left}s</span>
-        </div>
-      )}
-      <div className="fixed bottom-6 left-6 z-[60] flex gap-2">
-        <button onClick={stop} className="tool-btn bg-red-600 text-white font-bold">■ Stop (Esc)</button>
-        <button onClick={() => setShowBar(!showBar)} className="tool-btn bg-white text-slate-800">
-          {showBar ? "Hide captions" : "Show captions"}
-        </button>
+      {/* thin progress bar across the top */}
+      <div className="fixed top-0 left-0 h-1 z-[70] bg-[#E29578]" style={{ width: progress * 100 + "%" }} />
+
+      {/* chapter title card that slides in for each page */}
+      <div
+        aria-live="polite"
+        className={
+          "fixed left-1/2 bottom-16 z-[70] -translate-x-1/2 bg-[#1B3B36]/95 text-white px-8 py-4 rounded-2xl shadow-2xl text-center transition-all duration-700 " +
+          (cardOn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none")
+        }
+      >
+        <p className="text-[11px] tracking-widest uppercase text-[#E29578] font-bold">
+          {step + 1} of {STEPS.length}
+        </p>
+        <p className="text-2xl font-extrabold">{cur.title}</p>
+        <p className="text-sm text-white/80">{cur.text}</p>
       </div>
+
+      {/* almost invisible stop button */}
+      <button
+        onClick={stop}
+        className="fixed bottom-2 right-2 z-[70] text-[10px] text-white bg-black/40 px-2 py-1 rounded opacity-20 hover:opacity-100 transition-opacity"
+      >
+        Stop (Esc)
+      </button>
     </>
   );
 }

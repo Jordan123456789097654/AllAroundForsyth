@@ -215,6 +215,12 @@ export default function AdminPage() {
             <Download className="w-3.5 h-3.5" /> Export Data
           </button>
           <button
+            onClick={() => window.dispatchEvent(new Event("aaf-start-tour"))}
+            className="bg-[#E29578] hover:bg-[#d4805f] text-[#1B3B36] text-xs font-extrabold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors"
+          >
+            ▶ Start Presentation Tour (4 min)
+          </button>
+          <button
             onClick={handleResetData}
             className="bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors"
           >

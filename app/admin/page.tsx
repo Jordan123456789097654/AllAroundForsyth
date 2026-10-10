@@ -10,6 +10,7 @@
 import React, { useState, useEffect } from "react";
 import { getStoredData, saveStoredData, resetToDefaultData, ForsythDataset, Park, Business, EventItem } from "../data/forsythData";
 import { Settings, Lock, Plus, Trash2, Save, CheckCircle2, RotateCcw, Trees, Trophy, Calendar, Download, Clock, ShieldAlert, Key } from "lucide-react";
+import { TOUR_LENGTH } from "../components/DemoTour";
 
 export default function AdminPage() {
   const [pinInput, setPinInput] = useState("");
@@ -218,7 +219,7 @@ export default function AdminPage() {
             onClick={() => window.dispatchEvent(new Event("aaf-start-tour"))}
             className="bg-[#E29578] hover:bg-[#d4805f] text-[#1B3B36] text-xs font-extrabold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors"
           >
-            ▶ Start Presentation Tour (4 min)
+            ▶ Start Presentation Tour ({TOUR_LENGTH})
           </button>
           <button
             onClick={handleResetData}

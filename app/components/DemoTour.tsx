@@ -5,15 +5,11 @@
 // Coded by Jordan Daniels & DJ Reddish for FBLA Competition 2026
 //
 // Features:
-// - Glassmorphic Lower-Third Chapter Banners with SVG Countdown Ring
-// - Live Synchronized Voiceover Teleprompter (Jordan [J] & DJ [DJ])
-// - Retake / Repeat Chapter Key ('R') for seamless recording mistakes
 // - Concentric Neon Sonar Click Waves & Luminous Cursor Motion Trail
 // - Cinematic Feature Zoom / Push-in on spotlighted elements
-// - Live Typing Keystroke Indicator with blinking neon caret
+// - Live Typing Keystroke Feedback Badge
+// - 16:9 Video Framing Crop Guide ('F' key) for recording
 // - Golden Confetti / Sparkle Particle Bursts on action events
-// - 16:9 Video Framing Crop Guide ('F' key) for OBS / Loom / Screen Studio
-// - Subtle Web Audio Synthesizer Chimes ('M' to mute)
 // - Quick-Jump Chapter Dropdown & Pause/Resume Timeline Scrubber
 // ============================================================================
 
@@ -55,8 +51,6 @@ interface Step {
   title: string;
   text: string;
   badge: string;
-  speaker: "Jordan" | "DJ" | "Both";
-  script: string;
   scroll?: false | { from?: number; to?: number };
   spotTitle?: boolean;
   run?: (c: Ctx) => Promise<void>;
@@ -143,60 +137,7 @@ async function resetA11y() {
 const a11yRow = (label: string) =>
   byText("span", label)?.closest("div.flex")?.querySelector<HTMLElement>("button");
 
-// ---------- Web Audio Synthesizer (Optional Chimes) ----------
-let audioCtx: AudioContext | null = null;
-function getAudioContext() {
-  if (typeof window === "undefined") return null;
-  if (!audioCtx) {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (AudioContextClass) audioCtx = new AudioContextClass();
-  }
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume().catch(() => {});
-  }
-  return audioCtx;
-}
-
-function playSound(type: "chime" | "click" | "success") {
-  try {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === "click") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(620, now);
-      gain.gain.setValueAtTime(0.04, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-      osc.start(now);
-      osc.stop(now + 0.05);
-    } else if (type === "chime") {
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(523.25, now); // C5
-      osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
-      gain.gain.setValueAtTime(0.05, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      osc.start(now);
-      osc.stop(now + 0.4);
-    } else if (type === "success") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(587.33, now); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.15); // A5
-      gain.gain.setValueAtTime(0.06, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      osc.start(now);
-      osc.stop(now + 0.5);
-    }
-  } catch {}
-}
-
-// ---------- Chapter Definitions with Badges & Teleprompter Lines ----------
+// ---------- Chapter Definitions ----------
 const STEPS: Step[] = [
   {
     path: "/",
@@ -204,8 +145,6 @@ const STEPS: Step[] = [
     title: "Welcome to All Around Forsyth",
     text: "Live Cumming weather, Lake Lanier elevation & outdoor trail AQI",
     badge: "USGS & OPEN-METEO APIS",
-    speaker: "Both",
-    script: "Hi everyone, we're Jordan Daniels and DJ Reddish, and this is All Around Forsyth — a centralized community guide for Forsyth County, Georgia.",
     scroll: { from: 4 },
     run: async (c) => {
       await c.until(8);
@@ -218,8 +157,6 @@ const STEPS: Step[] = [
     title: "Instant Directory Search",
     text: "Press Cmd/Ctrl + K to search every park, department & local business",
     badge: "GLOBAL CMD+K PALETTE",
-    speaker: "Jordan",
-    script: "Residents can press Command K from any page to instantly search across 10 county parks, local businesses, and municipal departments.",
     scroll: false,
     spotTitle: false,
     run: async (c) => {
@@ -250,8 +187,6 @@ const STEPS: Step[] = [
     title: "Best Time to Visit",
     text: "Interactive crowd meter estimating peak rush vs. quiet hours",
     badge: "VISITOR CROWD METER",
-    speaker: "DJ",
-    script: "Our crowd meter analyzes weekend and weekday visit patterns for Halcyon, Sawnee Mountain, and Central Park so families can beat the rush.",
     scroll: false,
     spotTitle: false,
     run: async (c) => {
@@ -285,8 +220,6 @@ const STEPS: Step[] = [
     title: "Dark Mode & Español",
     text: "Eye-comfort night viewing and bilingual accessibility for our community",
     badge: "BILINGUAL & THEMES",
-    speaker: "Jordan",
-    script: "With a single click in the bottom toolbar, users can switch into dark mode for night reading, or toggle Spanish for bilingual household access.",
     scroll: false,
     spotTitle: false,
     run: async (c) => {
@@ -317,8 +250,6 @@ const STEPS: Step[] = [
     title: "Live Interactive County Map",
     text: "Satellite, terrain and street views of Forsyth landmarks with GPS pins",
     badge: "LEAFLET + MAPBOX TILES",
-    speaker: "DJ",
-    script: "Our interactive county map pins every park, municipal building, and business. Users can toggle satellite imagery and filter by category.",
     scroll: false,
     run: async (c) => {
       await c.until(4);
@@ -350,8 +281,6 @@ const STEPS: Step[] = [
     title: "Parks & Recreation Directory",
     text: "Search 960+ acres across 10 parks with live amenity filtering",
     badge: "COUNTY PARKS DEPT DATA",
-    speaker: "Jordan",
-    script: "Over 960 acres of parks are cataloged with official acreage, contact numbers, and amenity tags like dog parks, boat ramps, and paved trails.",
     scroll: { from: 15, to: 22 },
     run: async (c) => {
       await c.until(3.5);
@@ -380,8 +309,6 @@ const STEPS: Step[] = [
     title: "Verified Community Businesses",
     text: "Locally owned dining, entertainment and retail across Cumming",
     badge: "SMALL BUSINESS DIRECTORY",
-    speaker: "DJ",
-    script: "Instead of an arbitrary top ten list, this section celebrates local small businesses that make Forsyth unique, complete with verified addresses.",
     scroll: { from: 22, to: 26.5 },
     run: async (c) => {
       await c.until(3.5);
@@ -419,8 +346,6 @@ const STEPS: Step[] = [
     title: "Business Self-Submission Portal",
     text: "Instant directory publishing with automated validation and local storage",
     badge: "INSTANT AUTO-APPROVAL",
-    speaker: "Jordan",
-    script: "Any local business owner can register their own establishment. Our system validates the submission and publishes it immediately.",
     scroll: { from: 15, to: 19 },
     run: async (c) => {
       await c.until(3.5);
@@ -473,8 +398,6 @@ const STEPS: Step[] = [
     title: "Forsyth Community Calendar",
     text: "Festivals, farmers markets and fairgrounds gatherings with submission modal",
     badge: "COMMUNITY CALENDAR",
-    speaker: "DJ",
-    script: "Whether it's the Cumming Country Fair, 5K races, or weekly farmers markets, residents and visitors always know what is happening this weekend.",
     scroll: false,
     run: async (c) => {
       await c.until(3.5);
@@ -521,8 +444,6 @@ const STEPS: Step[] = [
     title: "Civic Leadership & Government",
     text: "Sheriff Freeman, Commission Chair and Board of Commissioners roster",
     badge: "CIVIC GOVERNANCE",
-    speaker: "Jordan",
-    script: "To encourage civic engagement, we built a dedicated leadership directory featuring Sheriff Ron Freeman, the County Commission, and department heads.",
     scroll: false,
     run: async (c) => {
       await c.until(2);
@@ -547,8 +468,6 @@ const STEPS: Step[] = [
     title: "Emergency & Public Safety",
     text: "One-touch 911, non-emergency dispatch, poison control and utility hotlines",
     badge: "911 / PUBLIC SAFETY",
-    speaker: "DJ",
-    script: "In an emergency, seconds matter. Important public safety numbers, non-emergency dispatch, and hospital contacts are centralized in one click.",
     scroll: false,
     run: async (c) => {
       await c.until(1.5);
@@ -565,8 +484,6 @@ const STEPS: Step[] = [
     title: "Forsyth County Heritage & Poole's Mill",
     text: "1832 county timeline & interactive 1901 Town lattice-truss architectural diagram",
     badge: "INTERACTIVE ARCHITECTURE",
-    speaker: "Jordan",
-    script: "We dive deep into local history with an 1832 timeline and an interactive diagram of the historic 1901 Poole's Mill Covered Bridge over Settendown Creek.",
     scroll: { from: 2, to: 9 },
     run: async (c) => {
       await c.until(10);
@@ -590,8 +507,6 @@ const STEPS: Step[] = [
     title: "Official Sources & Photo Credits",
     text: "Complete attribution for county data, USGS streams, NOAA weather & photography",
     badge: "FBLA COPYRIGHT & CREDITS",
-    speaker: "DJ",
-    script: "Academic and competitive integrity matters to us. Every single data feed, API, and photograph is thoroughly attributed on our Sources page.",
     spotTitle: false,
     run: async (c) => {
       await c.until(1);
@@ -606,8 +521,6 @@ const STEPS: Step[] = [
     title: "Personalized Place Favorites",
     text: "Save parks and local businesses on your own device without an account",
     badge: "LOCALSTORAGE PERSISTENCE",
-    speaker: "Jordan",
-    script: "Visitors can star any park or local business to save their personal favorites, stored privately on their device without requiring accounts.",
     scroll: false,
     run: async (c) => {
       await c.until(3);
@@ -634,8 +547,6 @@ const STEPS: Step[] = [
     title: "Day Itinerary Trip Planner",
     text: "Build a customized Forsyth day schedule with time slots and print it out",
     badge: "PRINTABLE ITINERARY",
-    speaker: "DJ",
-    script: "Our Trip Planner lets families assemble a personalized day in Forsyth County, automatically assigning 2-hour stops with a one-click printable schedule.",
     scroll: false,
     run: async (c) => {
       await c.until(3);
@@ -677,8 +588,6 @@ const STEPS: Step[] = [
     title: "Accessibility & WCAG 2.1 AA",
     text: "High-contrast mode, OpenDyslexic font, text resizing & reading guide bar",
     badge: "ADA / WCAG 2.1 COMPLIANT",
-    speaker: "Both",
-    script: "We engineered All Around Forsyth to be accessible for everyone — featuring high contrast, dyslexia font, text scaling up to 125%, and screen reader landmarks.",
     scroll: { from: 20, to: 23 },
     run: async (c) => {
       await c.until(3);
@@ -716,8 +625,6 @@ const STEPS: Step[] = [
     title: "Copyright & Student Authorship",
     text: "Built and designed exclusively by Jordan Daniels & DJ Reddish",
     badge: "INTELLECTUAL PROPERTY",
-    speaker: "Jordan",
-    script: "This project is the original work of Jordan Daniels and DJ Reddish. All custom code, designs, and branding are protected by copyright.",
     scroll: false,
     run: async (c) => {
       await c.until(3);
@@ -730,8 +637,6 @@ const STEPS: Step[] = [
     title: "Judges Portal & Rubric Matrix",
     text: "Interactive scorecard mapping competition requirements directly to code",
     badge: "FBLA RUBRIC AUDIT",
-    speaker: "DJ",
-    script: "To make evaluation effortless for our judges, our dedicated Judge Portal maps every single FBLA rubric standard directly to our implementation. Thank you!",
     scroll: false,
     run: async (c) => {
       await c.until(3);
@@ -767,14 +672,11 @@ export default function DemoTour() {
   const [count, setCount] = useState(3);
   const [paused, setPaused] = useState(false);
   const [hud, setHud] = useState(true);
-  const [teleprompter, setTeleprompter] = useState(true);
   const [frameGuide, setFrameGuide] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [barOn, setBarOn] = useState(false);
   const [endCard, setEndCard] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
   const [activeStep, setActiveStep] = useState(0);
-  const [stepClock, setStepClock] = useState(0);
   const [typingPreview, setTypingPreview] = useState<string | null>(null);
 
   const progressRef = useRef<HTMLDivElement>(null);
@@ -782,7 +684,6 @@ export default function DemoTour() {
   const spotRef = useRef<HTMLDivElement>(null);
   const ctl = useRef<{
     jump: (d: number) => void;
-    restartCurrent: () => void;
     togglePause: () => void;
     goTo: (index: number) => void;
   } | null>(null);
@@ -812,26 +713,21 @@ export default function DemoTour() {
   // 3-2-1 Countdown before start
   useEffect(() => {
     if (phase !== "count") return;
-    if (soundEnabled) playSound("click");
     const t = setTimeout(() => {
       if (count <= 1) {
-        if (soundEnabled) playSound("chime");
         setPhase("run");
       } else {
         setCount(count - 1);
       }
     }, 1000);
     return () => clearTimeout(t);
-  }, [phase, count, soundEnabled]);
+  }, [phase, count]);
 
   // Keyboard Shortcuts:
   // Space = Pause/Resume
   // Left/Right = Prev/Next Chapter
-  // R = Retake / Restart Chapter
-  // T = Toggle Teleprompter
   // F = Toggle 16:9 Frame Guide
   // H = Hide/Show Overlays
-  // M = Toggle Sound Chimes
   // Esc = Stop
   useEffect(() => {
     if (phase === "idle") return;
@@ -849,16 +745,10 @@ export default function DemoTour() {
         ctl.current?.jump(1);
       } else if (e.key === "ArrowLeft") {
         ctl.current?.jump(-1);
-      } else if (e.key === "r" || e.key === "R") {
-        ctl.current?.restartCurrent();
-      } else if (e.key === "t" || e.key === "T") {
-        setTeleprompter((prev) => !prev);
       } else if (e.key === "f" || e.key === "F") {
         setFrameGuide((prev) => !prev);
       } else if (e.key === "h" || e.key === "H") {
         setHud((prev) => !prev);
-      } else if (e.key === "m" || e.key === "M") {
-        setSoundEnabled((prev) => !prev);
       }
     }
     window.addEventListener("keydown", onKey);
@@ -979,8 +869,6 @@ export default function DemoTour() {
 
     // ----- Concentric Neon Click Waves -----
     function ripple(x: number, y: number) {
-      if (soundEnabled) playSound("click");
-
       // Outer Coral Wave
       const outer = document.createElement("div");
       outer.setAttribute("data-tour-ui", "");
@@ -1055,7 +943,6 @@ export default function DemoTour() {
 
     // ----- Gold Sparkle Particle Burst -----
     function triggerSparkle(x?: number, y?: number) {
-      if (soundEnabled) playSound("success");
       const targetX = x ?? cx;
       const targetY = y ?? cy;
       const count = 12;
@@ -1278,9 +1165,6 @@ export default function DemoTour() {
       isPaused = false;
       setPaused(false);
       setActiveStep(i);
-      setStepClock(0);
-
-      if (soundEnabled) playSound("chime");
 
       router.push(STEPS[i].path);
       window.scrollTo({
@@ -1298,9 +1182,6 @@ export default function DemoTour() {
         const n = idx + d;
         if (n >= STEPS.length) setPhase("idle");
         else go(Math.max(0, n));
-      },
-      restartCurrent: () => {
-        go(idx);
       },
       togglePause: () => {
         isPaused = !isPaused;
@@ -1320,7 +1201,6 @@ export default function DemoTour() {
       last = now;
       if (!isPaused) {
         clock += dt;
-        setStepClock(clock);
       }
       const s = STEPS[idx];
 
@@ -1423,17 +1303,9 @@ export default function DemoTour() {
       window.scrollTo({ top: 0 });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, soundEnabled]);
+  }, [phase]);
 
   const running = phase === "run";
-  const curStep = STEPS[activeStep] || STEPS[0];
-  const stepTimeRemaining = Math.max(0, Math.ceil(curStep.secs - stepClock));
-  const stepProgressFraction = Math.min(1, Math.max(0, stepClock / curStep.secs));
-
-  // SVG circular countdown progress math
-  const ringRadius = 14;
-  const ringCircumference = 2 * Math.PI * ringRadius;
-  const strokeDashoffset = ringCircumference * (1 - stepProgressFraction);
 
   const btn =
     "px-2.5 py-1 rounded-full hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-white transition-all text-xs font-semibold flex items-center gap-1 active:scale-95";
@@ -1542,13 +1414,11 @@ export default function DemoTour() {
             {count}
           </p>
           <p className="text-sm text-slate-300 font-medium">
-            Start your screen recorder now. Audio chime will sound on 0.
+            Start your screen recorder now.
           </p>
           <div className="flex flex-wrap gap-2 justify-center mt-6 text-xs text-slate-400">
             <span className="bg-white/10 px-2.5 py-1 rounded-md">Space: Pause</span>
             <span className="bg-white/10 px-2.5 py-1 rounded-md">← / →: Chapters</span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-md">R: Retake Page</span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-md">T: Teleprompter</span>
             <span className="bg-white/10 px-2.5 py-1 rounded-md">F: 16:9 Frame</span>
             <span className="bg-white/10 px-2.5 py-1 rounded-md">H: Hide HUD</span>
             <span className="bg-white/10 px-2.5 py-1 rounded-md">Esc: Exit</span>
@@ -1589,13 +1459,6 @@ export default function DemoTour() {
               ⏮
             </button>
             <button
-              className={btn}
-              onClick={() => ctl.current?.restartCurrent()}
-              title="Repeat / Retake This Chapter (R key)"
-            >
-              ↺ Retake (R)
-            </button>
-            <button
               className={
                 btn +
                 (paused
@@ -1625,31 +1488,17 @@ export default function DemoTour() {
             >
               {STEPS.map((s, i) => (
                 <option key={i} value={i} className="bg-slate-900 text-white">
-                  {i + 1}. {s.title.slice(0, 22)}...
+                  {i + 1}. {s.title.slice(0, 24)}...
                 </option>
               ))}
             </select>
 
-            <button
-              className={btn + (teleprompter ? " text-teal-300" : " opacity-60")}
-              onClick={() => setTeleprompter(!teleprompter)}
-              title="Toggle Script Teleprompter (T)"
-            >
-              🎙 Script
-            </button>
             <button
               className={btn + (frameGuide ? " text-amber-300" : " opacity-60")}
               onClick={() => setFrameGuide(!frameGuide)}
               title="Toggle 16:9 Crop Border (F)"
             >
               📐 16:9
-            </button>
-            <button
-              className={btn + (soundEnabled ? " text-emerald-300" : " opacity-40")}
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              title="Toggle Audio Cues (M)"
-            >
-              {soundEnabled ? "🔊" : "🔇"}
             </button>
             <button
               className={btn}
@@ -1665,98 +1514,6 @@ export default function DemoTour() {
             >
               ✕
             </button>
-          </div>
-
-          {/* ================================================================ */}
-          {/* LOWER-THIRD BROADCAST CHAPTER CARD & TELEPROMPTER */}
-          {/* ================================================================ */}
-          <div
-            data-tour-ui
-            className="fixed bottom-6 left-6 z-[70] flex flex-col gap-2.5 max-w-lg w-[calc(100vw-3rem)] pointer-events-none"
-          >
-            {/* Live Teleprompter Script Card (Toggleable with T) */}
-            {teleprompter && (
-              <div className="bg-[#0A1815]/95 backdrop-blur-xl border border-teal-500/30 text-white p-3.5 rounded-2xl shadow-2xl aaf-panel-in flex flex-col gap-1.5 pointer-events-auto">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={
-                        "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border " +
-                        (curStep.speaker === "Jordan"
-                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                          : curStep.speaker === "DJ"
-                          ? "bg-orange-500/20 text-orange-300 border-orange-500/40"
-                          : "bg-teal-500/20 text-teal-300 border-teal-500/40")
-                      }
-                    >
-                      Speaking: {curStep.speaker}
-                    </span>
-                    <span className="text-[10px] text-white/50 font-mono">
-                      Press &apos;T&apos; to hide
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-[#E29578] font-bold">
-                    {stepTimeRemaining}s left
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm font-semibold text-slate-100 leading-snug">
-                  &ldquo;{curStep.script}&rdquo;
-                </p>
-              </div>
-            )}
-
-            {/* Main Broadcast Lower-Third Banner */}
-            <div className="relative overflow-hidden bg-[#0d231f]/95 backdrop-blur-xl border border-white/20 text-white p-4.5 rounded-2xl shadow-2xl aaf-panel-in flex items-start justify-between gap-4 pointer-events-auto">
-              {/* Top Gradient Wipe Bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#2A8C82] via-[#E29578] to-teal-300" />
-
-              <div className="space-y-1 pr-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#E29578]">
-                    CHAPTER {activeStep + 1} OF {STEPS.length}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded text-teal-300 border border-teal-400/20">
-                    {curStep.badge}
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-tight">
-                  {curStep.title}
-                </h3>
-                <p className="text-xs text-white/80 leading-relaxed font-medium">
-                  {curStep.text}
-                </p>
-              </div>
-
-              {/* Glassmorphic Circular Countdown Ring */}
-              <div className="relative shrink-0 flex items-center justify-center w-12 h-12">
-                <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
-                  {/* Background Track */}
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r={ringRadius}
-                    className="stroke-white/15"
-                    strokeWidth="3"
-                    fill="none"
-                  />
-                  {/* Animated Progress Ring */}
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r={ringRadius}
-                    className="stroke-[#E29578] transition-all duration-100"
-                    strokeWidth="3"
-                    strokeDasharray={ringCircumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-                <span className="absolute font-mono text-xs font-black text-white">
-                  {stepTimeRemaining}
-                </span>
-              </div>
-            </div>
           </div>
         </>
       )}

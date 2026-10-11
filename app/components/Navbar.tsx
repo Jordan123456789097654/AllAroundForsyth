@@ -23,9 +23,11 @@ export default function Navbar({ onOpenSearch }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Jordan: keeping track of whether we're scrolled so the header gets a shadow
   useEffect(() => {
     setMounted(true);
     const handleScroll = () => {
+      // DJ note: 20px threshold felt smoother than 10px on trackpad
       if (window.scrollY > 20) {
         setIsScrolled(true);
       } else {

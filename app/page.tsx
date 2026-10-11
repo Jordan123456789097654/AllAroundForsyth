@@ -35,7 +35,9 @@ export default function HomePage() {
   const chosenBiz = data.businesses.find((b) => b.id === selectedBizId) || data.businesses[0];
   const chosenEvent = data.events.find((e) => e.id === selectedEventId) || data.events[0];
 
+  // DJ & Jordan: copy button formatting for the quick trip itinerary
   const handleCopyItinerary = () => {
+    // DJ: added emojis so when people text it to their friends it looks clean
     const text = `🌟 My Forsyth County Day Trip:\n` +
       `🌲 Morning (10:00 AM): Explore ${chosenPark.name} (${chosenPark.address})\n` +
       `🍽️ Afternoon (1:00 PM): Lunch & Shopping at ${chosenBiz.name} (${chosenBiz.address})\n` +
@@ -43,7 +45,7 @@ export default function HomePage() {
       `Plan your own trip at All Around Forsyth!`;
     navigator.clipboard.writeText(text);
     setItineraryCopied(true);
-    setTimeout(() => setItineraryCopied(false), 2000);
+    setTimeout(() => setItineraryCopied(false), 2000); // Jordan: 2 sec is good before checkmark resets
   };
 
   return (

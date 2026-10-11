@@ -113,11 +113,11 @@ export default function LiveConditionsWidget() {
   }, []);
 
   return (
-    <section className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+    <section className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-md space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 items-center">
         {/* Weather Module */}
-        <div className="flex items-center gap-4">
-          <div className="w-13 h-13 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0 border border-amber-200 shadow-xs">
+        <div className="flex items-center gap-4 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100 hover:border-amber-200 hover:shadow-sm transition-all">
+          <div className="w-13 h-13 rounded-2xl bg-amber-100/70 text-amber-600 flex items-center justify-center shrink-0 border border-amber-200/80 shadow-xs">
             {condition.includes("Rain") ? (
               <CloudRain className="w-7 h-7 text-blue-500" />
             ) : condition.includes("Cloud") ? (
@@ -128,11 +128,11 @@ export default function LiveConditionsWidget() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                Live Cumming, GA Weather
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                Live Cumming Weather
               </span>
-              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded-full">
-                Open-Meteo API
+              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded-full border border-emerald-200/50">
+                Open-Meteo
               </span>
             </div>
             <h4 className="text-base font-black text-[#1B3B36] mt-0.5">
@@ -142,16 +142,16 @@ export default function LiveConditionsWidget() {
         </div>
 
         {/* Lake Lanier USGS Module */}
-        <div className="flex items-center gap-4">
-          <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200 shadow-xs">
+        <div className="flex items-center gap-4 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-sm transition-all">
+          <div className="w-13 h-13 rounded-2xl bg-blue-100/70 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200/80 shadow-xs">
             <Waves className="w-7 h-7" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                Lake Lanier Elevation (USGS 02334400)
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                Lake Lanier Elevation
               </span>
-              <span className="text-[9px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.2 rounded-full">
+              <span className="text-[9px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.2 rounded-full border border-blue-200/50">
                 USGS Live
               </span>
             </div>
@@ -162,20 +162,20 @@ export default function LiveConditionsWidget() {
         </div>
 
         {/* Air Quality & Pollen Meter */}
-        <div className="flex items-center gap-4">
-          <div className="w-13 h-13 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200 shadow-xs">
+        <div className="flex items-center gap-4 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-sm transition-all">
+          <div className="w-13 h-13 rounded-2xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200/80 shadow-xs">
             <Wind className="w-7 h-7" />
           </div>
-          <div>
+          <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                Trail Air Quality & Pollen
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                Trail Air Quality
               </span>
-              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded-full">
-                US AQI {aqi}
+              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded-full border border-emerald-200/50">
+                AQI {aqi}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="flex items-center justify-between gap-2 mt-0.5">
               <h4 className="text-base font-black text-[#1B3B36]">
                 {aqiCategory}
               </h4>
@@ -183,14 +183,20 @@ export default function LiveConditionsWidget() {
                 onClick={() => setShowAirDetails(!showAirDetails)}
                 className="text-[10px] font-bold text-[#2A8C82] hover:underline"
               >
-                {showAirDetails ? "Hide Details" : "Runner Advisory ▾"}
+                {showAirDetails ? "Hide ▴" : "Advisory ▾"}
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Action / Refresh */}
-        <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-end">
+      {/* Action / Refresh */}
+      <div className="flex items-center gap-3 shrink-0 w-full justify-between pt-2 border-t border-slate-100">
+        <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Updated {lastUpdated}</span>
+        </div>
+        <div className="flex items-center gap-2">
           <button
             onClick={fetchConditions}
             disabled={loading}

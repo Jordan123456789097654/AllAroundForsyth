@@ -35,9 +35,7 @@ export default function HomePage() {
   const chosenBiz = data.businesses.find((b) => b.id === selectedBizId) || data.businesses[0];
   const chosenEvent = data.events.find((e) => e.id === selectedEventId) || data.events[0];
 
-  // DJ & Jordan: copy button formatting for the quick trip itinerary
   const handleCopyItinerary = () => {
-    // DJ: added emojis so when people text it to their friends it looks clean
     const text = `🌟 My Forsyth County Day Trip:\n` +
       `🌲 Morning (10:00 AM): Explore ${chosenPark.name} (${chosenPark.address})\n` +
       `🍽️ Afternoon (1:00 PM): Lunch & Shopping at ${chosenBiz.name} (${chosenBiz.address})\n` +
@@ -45,29 +43,29 @@ export default function HomePage() {
       `Plan your own trip at All Around Forsyth!`;
     navigator.clipboard.writeText(text);
     setItineraryCopied(true);
-    setTimeout(() => setItineraryCopied(false), 2000); // Jordan: 2 sec is good before checkmark resets
+    setTimeout(() => setItineraryCopied(false), 2000);
   };
 
   return (
     <div className="space-y-14 animate-in fade-in duration-300">
       {/* Premium Hero Section */}
       <section className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#1B3B36] via-[#142D29] to-[#0A1A18] text-white shadow-2xl border border-[#2A8C82]/30">
-        {/* Real Courthouse Background Image with Dark Vignette */}
+        {/* Real Courthouse Background Image with Rich Atmospheric Depth */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/Forsyth_County_courthouse.jpg"
-            alt="Forsyth County Courthouse"
+            alt="Forsyth County Courthouse in Cumming, Georgia"
             fill
-            className="object-cover opacity-20 mix-blend-overlay"
+            className="object-cover opacity-35 object-center"
             sizes="100vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1B3B36] via-[#1B3B36]/95 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1B3B36]/95 via-[#1B3B36]/80 to-[#142D29]/60" />
         </div>
 
         {/* Hero Content Grid */}
         <div className="relative z-10 p-8 sm:p-14 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 bg-[#2A8C82]/30 border border-[#2A8C82]/60 backdrop-blur-md text-emerald-200 px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 bg-[#2A8C82]/30 border border-[#2A8C82]/60 backdrop-blur-md text-emerald-200 px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase shadow-sm">
             <Sparkles className="w-4 h-4 text-[#E29578]" /> Official FBLA Community Web Guide 2026
           </div>
 
@@ -86,13 +84,13 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-4 pt-2">
             <Link
               href="/map"
-              className="bg-[#2A8C82] hover:bg-[#23776f] text-white px-7 py-3.5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-emerald-900/40 transition-all hover:-translate-y-0.5"
+              className="bg-[#2A8C82] hover:bg-[#23776f] text-white px-7 py-3.5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-emerald-900/50 transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <MapPin className="w-4 h-4 text-[#E29578]" /> Explore Live Interactive Map
             </Link>
             <Link
               href="/top-10"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-7 py-3.5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 border border-white/20 transition-all hover:-translate-y-0.5"
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-7 py-3.5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 border border-white/20 transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <Trophy className="w-4 h-4 text-amber-300" /> View Community Businesses
             </Link>
@@ -100,21 +98,25 @@ export default function HomePage() {
 
           {/* Verified Stats Strip */}
           <div className="pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-            <div className="bg-white/5 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
-              <span className="text-xl font-black text-[#E29578] block">38,000 Acres</span>
-              <span className="text-emerald-100/80 text-[11px] font-bold">Lake Lanier Reservoir</span>
+            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/15 transition-all hover:-translate-y-0.5 shadow-sm">
+              <span className="text-2xl font-black text-[#E29578] block">38,000</span>
+              <span className="text-emerald-100 font-bold block text-xs">Acres Lake Lanier</span>
+              <span className="text-white/60 text-[10px] font-medium">Full Pool 1,071 ft</span>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
-              <span className="text-xl font-black text-amber-300 block">10 Parks</span>
-              <span className="text-emerald-100/80 text-[11px] font-bold">960+ Acres of Trails</span>
+            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/15 transition-all hover:-translate-y-0.5 shadow-sm">
+              <span className="text-2xl font-black text-amber-300 block">10 Parks</span>
+              <span className="text-emerald-100 font-bold block text-xs">960+ Total Acres</span>
+              <span className="text-white/60 text-[10px] font-medium">Trails & Facilities</span>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
-              <span className="text-xl font-black text-emerald-300 block">Community</span>
-              <span className="text-emerald-100/80 text-[11px] font-bold">Businesses Listed</span>
+            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/15 transition-all hover:-translate-y-0.5 shadow-sm">
+              <span className="text-2xl font-black text-emerald-300 block">Local</span>
+              <span className="text-emerald-100 font-bold block text-xs">Small Businesses</span>
+              <span className="text-white/60 text-[10px] font-medium">Verified Community</span>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
-              <span className="text-xl font-black text-cyan-300 block">11+ Miles</span>
-              <span className="text-emerald-100/80 text-[11px] font-bold">Big Creek Greenway</span>
+            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/15 transition-all hover:-translate-y-0.5 shadow-sm">
+              <span className="text-2xl font-black text-cyan-300 block">11+ Miles</span>
+              <span className="text-emerald-100 font-bold block text-xs">Greenway Path</span>
+              <span className="text-white/60 text-[10px] font-medium">Big Creek Trail</span>
             </div>
           </div>
         </div>
